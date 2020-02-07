@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="alternate" href="/atom.xml" title="樱井喵" type="application/atom+xml">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.5.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="NQueensThe n-queens puzzle is the problem of placing n queens on an n×n chessboard such that no two queens attack each other.Given an integer n, return all distinct solutions to the n-queens puzzle.">
+<meta name="keywords" content="leetcode">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NQueens~回溯法">
+<meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;2020&#x2F;01&#x2F;18&#x2F;NQueen-%E5%9B%9E%E6%BA%AF%E6%B3%95&#x2F;index.html">
+<meta property="og:site_name" content="樱井喵">
+<meta property="og:description" content="NQueensThe n-queens puzzle is the problem of placing n queens on an n×n chessboard such that no two queens attack each other.Given an integer n, return all distinct solutions to the n-queens puzzle.">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https:&#x2F;&#x2F;assets.leetcode.com&#x2F;uploads&#x2F;2018&#x2F;10&#x2F;12&#x2F;8-queens.png">
+<meta property="og:updated_time" content="2020-01-19T05:23:51.116Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https:&#x2F;&#x2F;assets.leetcode.com&#x2F;uploads&#x2F;2018&#x2F;10&#x2F;12&#x2F;8-queens.png">
+
+<link rel="canonical" href="http://yoursite.com/2020/01/18/NQueen-%E5%9B%9E%E6%BA%AF%E6%B3%95/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>NQueens~回溯法 | 樱井喵</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">樱井喵</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/01/18/NQueen-%E5%9B%9E%E6%BA%AF%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Miao">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="樱井喵">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          NQueens~回溯法
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-01-18 21:21:09" itemprop="dateCreated datePublished" datetime="2020-01-18T21:21:09+08:00">2020-01-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-01-19 13:23:51" itemprop="dateModified" datetime="2020-01-19T13:23:51+08:00">2020-01-19</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p><strong>NQueens</strong><br>The n-queens puzzle is the problem of placing n queens on an n×n chessboard such that no two queens attack each other.<br><img src="https://assets.leetcode.com/uploads/2018/10/12/8-queens.png" alt="lc"><br>Given an integer n, return all distinct solutions to the n-queens puzzle.</p>
+<p>Each solution contains a distinct board configuration of the n-queens’ placement, where ‘Q’ and ‘.’ both indicate a queen and an empty space respectively.</p>
+</blockquote>
+<p>回溯法（backtracking）是暴力搜索法（Brute-force search）的一种。基于试错的思想，为达到目标一步步向前探索，发现走不通则向后退一步重新选择路径，直到找到所有解。回溯通常用递归实现。</p>
+<p>回溯法能找到问题的所有解，因此适用于n皇后问题。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> List&lt;List&lt;String&gt;&gt; solveNQueens(<span class="keyword">int</span> n) &#123;</span><br><span class="line">    List&lt;List&lt;String&gt;&gt; result = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span>[] queen = <span class="keyword">new</span> <span class="keyword">int</span>[n]; <span class="comment">// 每行中Q的位置</span></span><br><span class="line">    Arrays.fill(queen, -<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">boolean</span>[] col = <span class="keyword">new</span> <span class="keyword">boolean</span>[n]; <span class="comment">// 所在列是否有皇后</span></span><br><span class="line">    <span class="keyword">boolean</span>[] lt2rb = <span class="keyword">new</span> <span class="keyword">boolean</span>[<span class="number">2</span> * n - <span class="number">1</span>]; <span class="comment">// 所在对角线’/‘是否有皇后</span></span><br><span class="line">    <span class="keyword">boolean</span>[] lb2rt = <span class="keyword">new</span> <span class="keyword">boolean</span>[<span class="number">2</span> * n - <span class="number">1</span>]; <span class="comment">// 所在对角线’\‘是否有皇后</span></span><br><span class="line"></span><br><span class="line">    backTrack(n, queen, col, lt2rb, lb2rt, <span class="number">0</span>, result);</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">backTrack</span><span class="params">(<span class="keyword">int</span> n, <span class="keyword">int</span>[] queen, <span class="keyword">boolean</span>[] col, <span class="keyword">boolean</span>[] lt2rb, <span class="keyword">boolean</span>[] lb2rt, <span class="keyword">int</span> row,</span></span></span><br><span class="line"><span class="function"><span class="params">        List&lt;List&lt;String&gt;&gt; result)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (row &gt;= n) &#123; <span class="comment">// 到达一个解</span></span><br><span class="line">        addResult(queen, result);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (col[i] == <span class="keyword">false</span> &amp;&amp; lt2rb[i + row] == <span class="keyword">false</span> &amp;&amp; lb2rt[n - <span class="number">1</span> - row + i] == <span class="keyword">false</span>) &#123;</span><br><span class="line">                col[i] = lt2rb[i + row] = lb2rt[n - <span class="number">1</span> - row + i] = <span class="keyword">true</span>;</span><br><span class="line">                queen[row] = i;</span><br><span class="line">                backTrack(n, queen, col, lt2rb, lb2rt, row + <span class="number">1</span>, result);</span><br><span class="line">                <span class="comment">// 后退时还原到回溯点的状态</span></span><br><span class="line">                col[i] = lt2rb[i + row] = lb2rt[n - <span class="number">1</span> - row + i] = <span class="keyword">false</span>;</span><br><span class="line">                queen[row] = -<span class="number">1</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addResult</span><span class="params">(<span class="keyword">int</span>[] queen, List&lt;List&lt;String&gt;&gt; result)</span> </span>&#123;</span><br><span class="line">    List&lt;String&gt; list = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> r = <span class="number">0</span>; r &lt; queen.length; r++) &#123;</span><br><span class="line">        StringBuffer sb = <span class="keyword">new</span> StringBuffer();</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; queen.length; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (queen[r] == i) &#123;</span><br><span class="line">                sb.append(<span class="string">'Q'</span>);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                sb.append(<span class="string">'.'</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        list.add(sb.toString());</span><br><span class="line">    &#125;</span><br><span class="line">    result.add(list);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>比较需要注意的地方是,递归调用回溯函数时，在退出函数的地方要把相关数据还原到进入函数前的状态。<br>backtracking属于dfs的一种应用，不保留完整的树结构，遇到不能再走下去的路径是直接“剪枝”。</p>
+<blockquote>
+<p><strong>NQueens 2</strong><br>Given an integer n, return the number of distinct solutions to the n-queens puzzle. </p>
+</blockquote>
+<p>就是Output改成了解的个数，相当于addResult直接改成+1就可以。因为不需要解是什么，所以也不需要记录queen的位置了。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">totalNQueens</span><span class="params">(<span class="keyword">int</span> n)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// int[] queen = new int[n];</span></span><br><span class="line">    <span class="comment">// Arrays.fill(queen, -1);</span></span><br><span class="line">    <span class="keyword">boolean</span>[] col = <span class="keyword">new</span> <span class="keyword">boolean</span>[n];</span><br><span class="line">    <span class="keyword">boolean</span>[] leftTop = <span class="keyword">new</span> <span class="keyword">boolean</span>[<span class="number">2</span>*n+<span class="number">1</span>];</span><br><span class="line">    <span class="keyword">boolean</span>[] leftBottom = <span class="keyword">new</span> <span class="keyword">boolean</span>[<span class="number">2</span>*n+<span class="number">1</span>];</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> backtracking(n, col, leftTop, leftBottom, <span class="number">0</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">backtracking</span><span class="params">(<span class="keyword">int</span> n, <span class="keyword">boolean</span>[] col,<span class="keyword">boolean</span>[] leftTop,<span class="keyword">boolean</span>[] leftBottom, <span class="keyword">int</span> row)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(row&gt;=n) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">int</span> result = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;n; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span>(col[i]==<span class="keyword">false</span> &amp;&amp; leftTop[i+row]==<span class="keyword">false</span> &amp;&amp; leftBottom[n-<span class="number">1</span>-row+i]==<span class="keyword">false</span>) &#123;</span><br><span class="line">                col[i]=leftTop[i+row]= leftBottom[n-<span class="number">1</span>-row+i]=<span class="keyword">true</span>;</span><br><span class="line">                <span class="comment">// queen[row]=i;</span></span><br><span class="line">                result+=backtracking(n, col, leftTop, leftBottom, row+<span class="number">1</span>);</span><br><span class="line">                col[i]=leftTop[i+row]= leftBottom[n-<span class="number">1</span>-row+i]=<span class="keyword">false</span>; </span><br><span class="line">                <span class="comment">// queen[row]=-1;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/leetcode/" rel="tag"># leetcode</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+                <a href="/2020/01/08/Integer-to-Roman-%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%8B%BC%E6%8E%A5%E6%80%A7%E8%83%BD%E6%AF%94%E8%BE%83/" rel="next" title="Integer to Roman~字符串拼接性能比较">
+                  <i class="fa fa-chevron-left"></i> Integer to Roman~字符串拼接性能比较
+                </a>
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+                <a href="/2020/02/06/Largest-Rectangle-in-Histogram-%E4%B8%BA%E4%BB%80%E4%B9%88%E7%94%A8%E5%8D%95%E8%B0%83%E6%A0%88/" rel="prev" title="Largest Rectangle in Histogram~为什么用单调栈">
+                  Largest Rectangle in Histogram~为什么用单调栈 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <img class="site-author-image" itemprop="image" alt="Miao"
+    src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">Miao</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+  <div class="feed-link motion-element">
+    <a href="/atom.xml" rel="alternate">
+      <i class="fa fa-rss"></i>RSS
+    </a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Miao</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.0.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.5.0
+  </div>
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
