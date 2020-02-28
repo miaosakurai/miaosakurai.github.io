@@ -186,6 +186,75 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/02/28/Minimum-Window-Substring-Sliding-Window/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Miao">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="樱井喵">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/02/28/Minimum-Window-Substring-Sliding-Window/" class="post-title-link" itemprop="url">Minimum Window Substring~Sliding Window</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-02-28 12:03:58 / 修改时间：15:59:10" itemprop="dateCreated datePublished" datetime="2020-02-28T12:03:58+08:00">2020-02-28</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p><strong>Minimum Window Substring</strong><br>Given a string S and a string T, find the minimum window in S which will contain all the characters in T in complexity O(n).<br><strong>Example:</strong><br>Input: S = “ADOBECODEBANC”, T = “ABC”<br>Output: “BANC”</p>
+</blockquote>
+<p>在S中找到一个最短的substring，能包含T中所有的元素（T中的元素可能有重复，T中出现了几次，substring中也要至少出现几次）<br>先想到一种brute force的方法，从左往右遍历S（记为left），在从left往后走到right，每次判断left到right是否包含所有T中元素。这种方法的时间复杂度是O(n²)，不满足题目要求。</p>
+<p>观察上述方法中不必要的操作，可以发现有些left和right的位置一定不会是最短substring的端点，即不属于T的元素所在的位置。比如example中，有可能是minimum substring的只有：”ADOBEC”, “BECODEBA”, “CODEBA”, “BANC”。</p>
+<p>为了更快地定位到那些有可能的substring，可以使用<strong>sliding window</strong>方法：维持一个记录当前substring中T中元素个数的容器，right前进直到满足T条件，left前进直到刚刚不满足T条件，此时得到的substring再和当前最小比较。left和right都只走了一遍S，因此时间复杂度是O(n)。</p>
+<p><strong>java implementation</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">minWindow</span><span class="params">(String s, String t)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// tMap: 记录T需要满足的条件</span></span><br><span class="line">    <span class="comment">// Map&lt;Character, Integer&gt; tMap = new HashMap&lt;&gt;();</span></span><br><span class="line">    <span class="keyword">char</span>[] ts = t.toCharArray();</span><br><span class="line">    <span class="comment">// sMap: 记录当前substring满足的条件</span></span><br><span class="line">    Map&lt;Character, Integer&gt; sMap = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">    <span class="keyword">char</span>[] ss = s.toCharArray();</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;t.length(); i++) &#123;</span><br><span class="line">        <span class="comment">// tMap.put(ts[i], tMap.getOrDefault(ts[i], 0)+1);</span></span><br><span class="line">        sMap.put(ts[i], sMap.getOrDefault(ts[i], <span class="number">0</span>)-<span class="number">1</span>); <span class="comment">// -n表示要满足T还需要n个元素</span></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">int</span> left = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> right = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> minLeft = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> minRight = s.length();</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">while</span> (right&lt;s.length()) &#123;</span><br><span class="line">        <span class="keyword">if</span>(sMap.containsKey(ss[right])) </span><br><span class="line">            sMap.put(ss[right], sMap.get(ss[right])+<span class="number">1</span>);</span><br><span class="line">        <span class="keyword">if</span>(isSatisfied(sMap)) &#123;</span><br><span class="line">            <span class="keyword">while</span>(!sMap.containsKey(ss[left]) || sMap.get(ss[left])&gt;<span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">if</span>(sMap.containsKey(ss[left])) &#123;</span><br><span class="line">                    sMap.put(ss[left], sMap.get(ss[left])-<span class="number">1</span>);</span><br><span class="line">                &#125;</span><br><span class="line">                left++;</span><br><span class="line">            &#125;</span><br><span class="line">            sMap.put(ss[left], -<span class="number">1</span>);</span><br><span class="line">            left++;</span><br><span class="line">            <span class="comment">// left刚刚不满足，计算left-1到right</span></span><br><span class="line">            <span class="keyword">if</span>(right-(left-<span class="number">1</span>) &lt; minRight - minLeft) &#123;</span><br><span class="line">                minRight = right;</span><br><span class="line">                minLeft = left-<span class="number">1</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// not satisfied</span></span><br><span class="line">        right++;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span>(minRight==s.length()) <span class="keyword">return</span> <span class="string">""</span>;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">return</span> s.substring(minLeft, minRight+<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">isSatisfied</span><span class="params">(Map&lt;Character, Integer&gt; sMap)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span>(Integer v: sMap.values()) &#123;</span><br><span class="line">        <span class="keyword">if</span>(v&lt;<span class="number">0</span>) <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>python implementation</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span>:</span></span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">isSatisfied</span><span class="params">(self, **dict)</span>:</span></span><br><span class="line">        <span class="keyword">for</span> k,v <span class="keyword">in</span> dict.items():</span><br><span class="line">            <span class="keyword">if</span> v&gt;<span class="number">0</span>: <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line">        <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">minWindow</span><span class="params">(self, s: str, t: str)</span> -&gt; str:</span></span><br><span class="line">        dict = collections.Counter(t) <span class="comment"># 计算t中元素</span></span><br><span class="line">        left, right = <span class="number">0</span>, <span class="number">0</span></span><br><span class="line">        minL, minR = <span class="number">0</span>, len(s)</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">while</span> right &lt; len(s):</span><br><span class="line">            <span class="keyword">if</span> s[right] <span class="keyword">in</span> dict:</span><br><span class="line">                dict[s[right]]-=<span class="number">1</span></span><br><span class="line">                </span><br><span class="line">            <span class="keyword">if</span> self.isSatisfied(**dict):</span><br><span class="line">                <span class="keyword">while</span> s[left] <span class="keyword">not</span> <span class="keyword">in</span> dict <span class="keyword">or</span> dict[s[left]] &lt; <span class="number">0</span>:</span><br><span class="line">                    <span class="keyword">if</span> s[left] <span class="keyword">in</span> dict:</span><br><span class="line">                        dict[s[left]]+=<span class="number">1</span></span><br><span class="line">                    left+=<span class="number">1</span></span><br><span class="line">                dict[s[left]]+=<span class="number">1</span></span><br><span class="line">                <span class="keyword">if</span> right-left &lt; minR -minL:</span><br><span class="line">                    minL = left</span><br><span class="line">                    minR = right</span><br><span class="line">                left+=<span class="number">1</span></span><br><span class="line">            right+=<span class="number">1</span></span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> minR == len(s): <span class="keyword">return</span> <span class="string">""</span></span><br><span class="line">        <span class="keyword">else</span>: <span class="keyword">return</span> s[minL:minR+<span class="number">1</span>]</span><br></pre></td></tr></table></figure>
+<p><strong>参考</strong><br>[1]<a href="https://www.youtube.com/watch?v=eS6PZLjoaq8" target="_blank" rel="noopener">https://www.youtube.com/watch?v=eS6PZLjoaq8</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/02/22/Gray-Code-%E7%94%A8%E5%8D%81%E8%BF%9B%E5%88%B6%E8%A1%A8%E7%A4%BA%E4%BA%8C%E8%BF%9B%E5%88%B6%E9%97%AE%E9%A2%98/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -758,7 +827,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-count">8</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
