@@ -51,15 +51,15 @@
   };
 </script>
 
-  <meta name="description" content="决定于要好好开始写博客的第一步就是装修，看到别人的博客代码块是Mac panel风格觉得很酷炫，自己也想弄一个。于是看到别人的实现方式都是自己加js和css，试了一下并不work，有限的前端水平也没有找到原因。 于是我去看了看next代码块相关的css代码，突然发现next配置里本来就有这个mac风格代码块的css😂 也就是说，在 _config.yml 配置一下 codeblock.copy_">
+  <meta name="description" content="决定于要好好开始写博客的第一步就是装修，看到别人的博客代码块是Mac panel风格觉得很酷炫，自己也想弄一个。于是看到别人的实现方式都是自己加js和css，试了一下并不work，有限的前端水平也没有找到原因。 于是我去看了看next代码块相关的css代码，突然发现next配置里本来就有这个mac风格代码块的css😂 1234567891011121314151617181920if (hexo">
 <meta name="keywords" content="Hexo">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Hexo+NexT美化🍕Mac Panel风格代码块配置">
 <meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;2020&#x2F;04&#x2F;20&#x2F;Hexo-NexT%E7%BE%8E%E5%8C%96%F0%9F%8D%95Mac-Panel%E9%A3%8E%E6%A0%BC%E4%BB%A3%E7%A0%81%E5%9D%97%E9%85%8D%E7%BD%AE&#x2F;index.html">
 <meta property="og:site_name" content="樱井喵">
-<meta property="og:description" content="决定于要好好开始写博客的第一步就是装修，看到别人的博客代码块是Mac panel风格觉得很酷炫，自己也想弄一个。于是看到别人的实现方式都是自己加js和css，试了一下并不work，有限的前端水平也没有找到原因。 于是我去看了看next代码块相关的css代码，突然发现next配置里本来就有这个mac风格代码块的css😂 也就是说，在 _config.yml 配置一下 codeblock.copy_">
+<meta property="og:description" content="决定于要好好开始写博客的第一步就是装修，看到别人的博客代码块是Mac panel风格觉得很酷炫，自己也想弄一个。于是看到别人的实现方式都是自己加js和css，试了一下并不work，有限的前端水平也没有找到原因。 于是我去看了看next代码块相关的css代码，突然发现next配置里本来就有这个mac风格代码块的css😂 1234567891011121314151617181920if (hexo">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-04-20T16:46:38.270Z">
+<meta property="og:updated_time" content="2020-04-20T16:48:42.970Z">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="http://yoursite.com/2020/04/20/Hexo-NexT%E7%BE%8E%E5%8C%96%F0%9F%8D%95Mac-Panel%E9%A3%8E%E6%A0%BC%E4%BB%A3%E7%A0%81%E5%9D%97%E9%85%8D%E7%BD%AE/">
@@ -222,8 +222,19 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-04-21 00:46:38" itemprop="dateModified" datetime="2020-04-21T00:46:38+08:00">2020-04-21</time>
+                <time title="修改时间：2020-04-21 00:48:42" itemprop="dateModified" datetime="2020-04-21T00:48:42+08:00">2020-04-21</time>
               </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%85%B6%E4%BB%96%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index">
+                    <span itemprop="name">其他工具</span>
+                  </a>
+                </span>
+            </span>
 
           
 
@@ -238,10 +249,12 @@
       
         <p>决定于要好好开始写博客的第一步就是装修，看到别人的博客代码块是Mac panel风格觉得很酷炫，自己也想弄一个。于是看到别人的实现方式都是自己加js和css，试了一下并不work，有限的前端水平也没有找到原因。</p>
 <p>于是我去看了看next代码块相关的css代码，突然发现next配置里本来就有这个mac风格代码块的css😂</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (hexo-config(<span class="string">'codeblock.copy_button.style'</span>) == <span class="string">'mac'</span>) &#123;</span><br><span class="line">  <span class="selector-class">.highlight-wrap</span> &#123;</span><br><span class="line">    <span class="attribute">background</span>: <span class="number">#21252b</span>;</span><br><span class="line">    <span class="attribute">border-radius</span>: <span class="number">5px</span>;</span><br><span class="line">    box-shadow: 0 10px 30px 0 rgba(0, 0, 0, .4);</span><br><span class="line">    <span class="attribute">padding-top</span>: <span class="number">30px</span>;</span><br><span class="line"></span><br><span class="line">    &amp;::before &#123;</span><br><span class="line">      <span class="attribute">background</span>: <span class="number">#fc625d</span>;</span><br><span class="line">      <span class="attribute">border-radius</span>: <span class="number">50%</span>;</span><br><span class="line">      <span class="attribute">box-shadow</span>: <span class="number">20px</span> <span class="number">0</span> <span class="number">#fdbc40</span>, <span class="number">40px</span> <span class="number">0</span> <span class="number">#35cd4b</span>;</span><br><span class="line">      <span class="attribute">content</span>: <span class="string">' '</span>;</span><br><span class="line">      <span class="attribute">height</span>: <span class="number">12px</span>;</span><br><span class="line">      <span class="attribute">left</span>: <span class="number">12px</span>;</span><br><span class="line">      <span class="attribute">margin-top</span>: -<span class="number">20px</span>;</span><br><span class="line">      <span class="attribute">position</span>: absolute;</span><br><span class="line">      <span class="attribute">width</span>: <span class="number">12px</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
 <p>也就是说，在 <code>_config.yml</code> 配置一下 codeblock.copy_button.style: mac就好了。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">codeblock:</span></span><br><span class="line">  <span class="comment"># Code Highlight theme</span></span><br><span class="line">  <span class="comment"># Available values: normal | night | night eighties | night blue | night bright | solarized | solarized dark | galactic</span></span><br><span class="line">  <span class="comment"># See: https://github.com/chriskempson/tomorrow-theme</span></span><br><span class="line">  <span class="attr">highlight_theme:</span> <span class="string">night</span> <span class="string">eighties</span> <span class="comment"># *changed* 高亮风格</span></span><br><span class="line">  <span class="comment"># Add copy button on codeblock</span></span><br><span class="line">  <span class="attr">copy_button:</span></span><br><span class="line">    <span class="attr">enable:</span> <span class="literal">true</span>  <span class="comment"># *changed* 打开代码复制功能</span></span><br><span class="line">    <span class="comment"># Show text copy result.</span></span><br><span class="line">    <span class="attr">show_result:</span> <span class="literal">false</span></span><br><span class="line">    <span class="comment"># Available values: default | flat | mac</span></span><br><span class="line">    <span class="attr">style:</span> <span class="string">mac</span>  <span class="comment"># *changed* 设为mac风格</span></span><br></pre></td></tr></table></figure>
 
 <p>就这？.jpg</p>
 
