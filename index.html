@@ -188,6 +188,96 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/22/LRU-Cache-%E5%AE%B9%E6%98%93%E5%87%BA%E9%94%99%E7%9A%84%E5%A4%B4%E5%B0%BE%E6%8C%87%E9%92%88/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Miao">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="樱井喵">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/04/22/LRU-Cache-%E5%AE%B9%E6%98%93%E5%87%BA%E9%94%99%E7%9A%84%E5%A4%B4%E5%B0%BE%E6%8C%87%E9%92%88/" class="post-title-link" itemprop="url">LRU Cache~容易出错的头尾指针</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-04-22 21:05:51 / 修改时间：21:27:04" itemprop="dateCreated datePublished" datetime="2020-04-22T21:05:51+08:00">2020-04-22</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Algorithm/" itemprop="url" rel="index">
+                    <span itemprop="name">Algorithm</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p><strong>LRU Cache</strong></p>
+<p>Design and implement a data structure for <a href="https://en.wikipedia.org/wiki/Cache_replacement_policies#LRU" target="_blank" rel="noopener">Least Recently Used (LRU) cache</a>. It should support the following operations: <code>get</code> and <code>put</code>.</p>
+<p><code>get(key)</code> - Get the value (will always be positive) of the key if the key exists in the cache, otherwise return -1.<br><code>put(key, value)</code> - Set or insert the value if the key is not already present. When the cache reached its capacity, it should invalidate the least recently used item before inserting a new item.</p>
+<p>The cache is initialized with a <strong>positive</strong> capacity.</p>
+<p><strong>Follow up:</strong><br>Could you do both operations in <strong>O(1)</strong> time complexity?</p>
+<p><strong>Example:</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">LRUCache cache = new LRUCache( 2 /* capacity */ );</span><br><span class="line"></span><br><span class="line">cache.put(1, 1);</span><br><span class="line">cache.put(2, 2);</span><br><span class="line">cache.get(1);       // returns 1</span><br><span class="line">cache.put(3, 3);    // evicts key 2</span><br><span class="line">cache.get(2);       // returns -1 (not found)</span><br><span class="line">cache.put(4, 4);    // evicts key 1</span><br><span class="line">cache.get(1);       // returns -1 (not found)</span><br><span class="line">cache.get(3);       // returns 3</span><br><span class="line">cache.get(4);       // returns 4</span><br></pre></td></tr></table></figure>
+
+<p><a href="https://leetcode.com/problems/lru-cache/" target="_blank" rel="noopener">https://leetcode.com/problems/lru-cache/</a></p>
+</blockquote>
+<p>LRU Cache需要在存放数据的同时，记录数据存放的顺序。</p>
+<p>那么谁来记录顺序呢？-可以让每组数据各自记录。</p>
+<p>即把key, value, 顺序信息 (prev, next) 都封装在一个节点里，再把节点存到Cache中.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Node</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, k, v)</span>:</span></span><br><span class="line">        self.k = k</span><br><span class="line">        self.v = v</span><br><span class="line">        self.next = <span class="literal">None</span></span><br><span class="line">        self.prev = <span class="literal">None</span></span><br></pre></td></tr></table></figure>
+
+<p>Cache整体只需记录head(least recently used) 和tail (recently used). 如用Python实现，可以用dict作为Cache.</p>
+<p>一开始我把head和tail指针都设为None，这样做的话之后每次add和remove节点时，都要对头尾指针单独做处理（本来不难的问题，因为没处理好指针，卡了好久😔）</p>
+<p>看了discussion学到了一个小技巧：把头尾指针随便初始化一个固定的节点，这样每次进行操作的时候就不用单独讨论头尾指针的情况了。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LRUCache</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, capacity: int)</span>:</span></span><br><span class="line">        self.capacity = capacity</span><br><span class="line">        self.dict = dict()</span><br><span class="line">        <span class="comment"># self.head = None</span></span><br><span class="line">        <span class="comment"># self.tail = None</span></span><br><span class="line">        <span class="comment"># pointer trick</span></span><br><span class="line">        self.head = Node(<span class="number">0</span>, <span class="number">0</span>)  <span class="comment"># not used for long time</span></span><br><span class="line">        self.tail = Node(<span class="number">0</span>, <span class="number">0</span>)  <span class="comment"># recently used</span></span><br><span class="line">        self.head.next = self.tail</span><br><span class="line">        self.tail.prev = self.head</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get</span><span class="params">(self, key: int)</span> -&gt; int:</span></span><br><span class="line">        <span class="keyword">if</span> (key <span class="keyword">in</span> self.dict):</span><br><span class="line">            n = self.dict[key]</span><br><span class="line">            self._remove(n)</span><br><span class="line">            self._add(n)</span><br><span class="line">            <span class="keyword">return</span> n.v</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">put</span><span class="params">(self, key: int, value: int)</span> -&gt; <span class="keyword">None</span>:</span></span><br><span class="line">        <span class="keyword">if</span> (key <span class="keyword">in</span> self.dict):</span><br><span class="line">            self._remove(self.dict[key])</span><br><span class="line"></span><br><span class="line">        node = Node(key, value)</span><br><span class="line">        self._add(node)</span><br><span class="line">        self.dict[key] = node</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> (len(self.dict) &gt; self.capacity):</span><br><span class="line">            n=self.head.next</span><br><span class="line">            self._remove(n)</span><br><span class="line">            <span class="keyword">del</span> self.dict[n.k]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment"># add to tail</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">_add</span><span class="params">(self, node)</span>:</span></span><br><span class="line">        rail_tail = self.tail.prev</span><br><span class="line">        rail_tail.next = node</span><br><span class="line">        self.tail.prev = node</span><br><span class="line">        node.prev = rail_tail</span><br><span class="line">        node.next = self.tail</span><br><span class="line"></span><br><span class="line">    <span class="comment"># delete from list</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">_remove</span><span class="params">(self, node)</span>:</span></span><br><span class="line">            p = node.prev</span><br><span class="line">            n = node.next</span><br><span class="line">            p.next = n</span><br><span class="line">            n.prev = p</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/20/Hexo-NexT%E7%BE%8E%E5%8C%96%F0%9F%8D%95Mac-Panel%E9%A3%8E%E6%A0%BC%E4%BB%A3%E7%A0%81%E5%9D%97%E9%85%8D%E7%BD%AE/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -525,7 +615,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-04-18 21:10:13" itemprop="dateModified" datetime="2020-04-18T21:10:13+08:00">2020-04-18</time>
+                <time title="修改时间：2020-04-22 21:27:25" itemprop="dateModified" datetime="2020-04-22T21:27:25+08:00">2020-04-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -611,7 +701,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-04-18 21:09:46" itemprop="dateModified" datetime="2020-04-18T21:09:46+08:00">2020-04-18</time>
+                <time title="修改时间：2020-04-22 21:27:15" itemprop="dateModified" datetime="2020-04-22T21:27:15+08:00">2020-04-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -696,7 +786,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-04-18 21:10:20" itemprop="dateModified" datetime="2020-04-18T21:10:20+08:00">2020-04-18</time>
+                <time title="修改时间：2020-04-22 21:27:21" itemprop="dateModified" datetime="2020-04-22T21:27:21+08:00">2020-04-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -783,7 +873,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-04-18 21:10:07" itemprop="dateModified" datetime="2020-04-18T21:10:07+08:00">2020-04-18</time>
+                <time title="修改时间：2020-04-22 21:27:09" itemprop="dateModified" datetime="2020-04-22T21:27:09+08:00">2020-04-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -871,7 +961,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-04-18 21:10:11" itemprop="dateModified" datetime="2020-04-18T21:10:11+08:00">2020-04-18</time>
+                <time title="修改时间：2020-04-22 21:27:07" itemprop="dateModified" datetime="2020-04-22T21:27:07+08:00">2020-04-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -960,7 +1050,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-04-18 21:10:16" itemprop="dateModified" datetime="2020-04-18T21:10:16+08:00">2020-04-18</time>
+                <time title="修改时间：2020-04-22 21:27:23" itemprop="dateModified" datetime="2020-04-22T21:27:23+08:00">2020-04-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -998,117 +1088,6 @@
 </blockquote>
 <p>就是Output改成了解的个数，相当于addResult直接改成+1就可以。因为不需要解是什么，所以也不需要记录queen的位置了。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">totalNQueens</span><span class="params">(<span class="keyword">int</span> n)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// int[] queen = new int[n];</span></span><br><span class="line">    <span class="comment">// Arrays.fill(queen, -1);</span></span><br><span class="line">    <span class="keyword">boolean</span>[] col = <span class="keyword">new</span> <span class="keyword">boolean</span>[n];</span><br><span class="line">    <span class="keyword">boolean</span>[] leftTop = <span class="keyword">new</span> <span class="keyword">boolean</span>[<span class="number">2</span>*n+<span class="number">1</span>];</span><br><span class="line">    <span class="keyword">boolean</span>[] leftBottom = <span class="keyword">new</span> <span class="keyword">boolean</span>[<span class="number">2</span>*n+<span class="number">1</span>];</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> backtracking(n, col, leftTop, leftBottom, <span class="number">0</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">backtracking</span><span class="params">(<span class="keyword">int</span> n, <span class="keyword">boolean</span>[] col,<span class="keyword">boolean</span>[] leftTop,<span class="keyword">boolean</span>[] leftBottom, <span class="keyword">int</span> row)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(row&gt;=n) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">int</span> result = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;n; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span>(col[i]==<span class="keyword">false</span> &amp;&amp; leftTop[i+row]==<span class="keyword">false</span> &amp;&amp; leftBottom[n-<span class="number">1</span>-row+i]==<span class="keyword">false</span>) &#123;</span><br><span class="line">                col[i]=leftTop[i+row]= leftBottom[n-<span class="number">1</span>-row+i]=<span class="keyword">true</span>;</span><br><span class="line">                <span class="comment">// queen[row]=i;</span></span><br><span class="line">                result+=backtracking(n, col, leftTop, leftBottom, row+<span class="number">1</span>);</span><br><span class="line">                col[i]=leftTop[i+row]= leftBottom[n-<span class="number">1</span>-row+i]=<span class="keyword">false</span>; </span><br><span class="line">                <span class="comment">// queen[row]=-1;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/01/08/Integer-to-Roman-%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%8B%BC%E6%8E%A5%E6%80%A7%E8%83%BD%E6%AF%94%E8%BE%83/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Miao">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="樱井喵">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/01/08/Integer-to-Roman-%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%8B%BC%E6%8E%A5%E6%80%A7%E8%83%BD%E6%AF%94%E8%BE%83/" class="post-title-link" itemprop="url">Integer to Roman~字符串拼接性能比较</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-01-08 17:40:47" itemprop="dateCreated datePublished" datetime="2020-01-08T17:40:47+08:00">2020-01-08</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-04-18 21:09:56" itemprop="dateModified" datetime="2020-04-18T21:09:56+08:00">2020-04-18</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Algorithm/" itemprop="url" rel="index">
-                    <span itemprop="name">Algorithm</span>
-                  </a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>突然发现自己已经半年没写过代码了。太可怕了。<br>决定从一道Medium的LeetCode开始。</p>
-<blockquote>
-<p>Roman numerals are represented by seven different symbols: I, V, X, L, C, D and M.</p>
-<p>Symbol       Value<br>I             1<br>V             5<br>X             10<br>L             50<br>C             100<br>D             500<br>M             1000</p>
-<p>I can be placed before V (5) and X (10) to make 4 and 9.<br>X can be placed before L (50) and C (100) to make 40 and 90.<br>C can be placed before D (500) and M (1000) to make 400 and 900.</p>
-</blockquote>
-<p>看起来非常没意思的一道题。于是迅速地写了一段可怕的代码：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 5 ms	36.9 MB</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">intToRoman</span><span class="params">(<span class="keyword">int</span> num)</span> </span>&#123;</span><br><span class="line">        String roman=<span class="string">""</span>;</span><br><span class="line">        <span class="keyword">while</span>(num / <span class="number">1000</span> != <span class="number">0</span>) &#123;</span><br><span class="line">            num -= <span class="number">1000</span>;</span><br><span class="line">            roman += <span class="string">"M"</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">while</span>(num / <span class="number">900</span> != <span class="number">0</span>) &#123;</span><br><span class="line">            num -= <span class="number">900</span>;</span><br><span class="line">            roman += <span class="string">"CM"</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">while</span>(num / <span class="number">500</span> != <span class="number">0</span>) &#123;</span><br><span class="line">            num -= <span class="number">500</span>;</span><br><span class="line">            roman += <span class="string">"D"</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">while</span>(num / <span class="number">400</span> != <span class="number">0</span>) &#123;</span><br><span class="line">            num -= <span class="number">400</span>;</span><br><span class="line">            roman += <span class="string">"CD"</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">while</span>(num / <span class="number">100</span> != <span class="number">0</span>) &#123;</span><br><span class="line">            num -= <span class="number">100</span>;</span><br><span class="line">            roman += <span class="string">"C"</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">while</span>(num / <span class="number">90</span> != <span class="number">0</span>) &#123;</span><br><span class="line">            num -= <span class="number">90</span>;</span><br><span class="line">            roman += <span class="string">"XC"</span>;</span><br><span class="line">        &#125;</span><br><span class="line">          <span class="keyword">while</span>(num / <span class="number">50</span> != <span class="number">0</span>) &#123;</span><br><span class="line">            num -= <span class="number">50</span>;</span><br><span class="line">            roman += <span class="string">"L"</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">while</span>(num / <span class="number">40</span> != <span class="number">0</span>) &#123;</span><br><span class="line">            num -= <span class="number">40</span>;</span><br><span class="line">            roman += <span class="string">"XL"</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">while</span>(num / <span class="number">10</span> != <span class="number">0</span>) &#123;</span><br><span class="line">            num -= <span class="number">10</span>;</span><br><span class="line">            roman += <span class="string">"X"</span>;</span><br><span class="line">        &#125;</span><br><span class="line">            <span class="keyword">while</span>(num / <span class="number">9</span> != <span class="number">0</span>) &#123;</span><br><span class="line">            num -= <span class="number">9</span>;</span><br><span class="line">            roman += <span class="string">"IX"</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">while</span>(num / <span class="number">5</span> != <span class="number">0</span>) &#123;</span><br><span class="line">            num -= <span class="number">5</span>;</span><br><span class="line">            roman += <span class="string">"V"</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">while</span>(num / <span class="number">4</span> != <span class="number">0</span>) &#123;</span><br><span class="line">            num -= <span class="number">4</span>;</span><br><span class="line">            roman += <span class="string">"IV"</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;num;i++)&#123;</span><br><span class="line">            roman += <span class="string">"I"</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> roman;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>不愧是半年没写代码的女人。</p>
-<h2 id="Java字符串拼接的性能比较"><a href="#Java字符串拼接的性能比较" class="headerlink" title="Java字符串拼接的性能比较"></a>Java字符串拼接的性能比较</h2><p>我不记得字符串拼接最快的方法，但我记得直接+++的方法是最慢的方法。<br>复习了一下字符串拼接常用的四种方法，并测试了它们的性能：</p>
-<ol>
-<li>“a”+”b”+”c”<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">m1</span><span class="params">(String[] strs)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">long</span> startTime = System.currentTimeMillis();</span><br><span class="line">    String result = <span class="string">""</span>;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;<span class="number">20000</span>; i++)</span><br><span class="line">    <span class="keyword">for</span> (String s: strs) &#123;</span><br><span class="line">        result += s;</span><br><span class="line">    &#125;</span><br><span class="line">    System.out.println(<span class="string">"M1 cost "</span> + (System.currentTimeMillis() - startTime) + <span class="string">" ms."</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// Output: M1 cost 3161 ms.</span></span><br></pre></td></tr></table></figure>
-
-
-</li>
-</ol>
-<ol start="2">
-<li>String concat方法<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">m2</span><span class="params">(String[] strs)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">long</span> startTime = System.currentTimeMillis();</span><br><span class="line">    String result = <span class="string">""</span>;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;<span class="number">20000</span>; i++)</span><br><span class="line">    <span class="keyword">for</span> (String s: strs) &#123;</span><br><span class="line">        result.concat(s);</span><br><span class="line">    &#125;</span><br><span class="line">    System.out.println(<span class="string">"M2 cost "</span> + (System.currentTimeMillis() - startTime) + <span class="string">" ms."</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// Output: M2 cost 5 ms.</span></span><br></pre></td></tr></table></figure>
-
-
-</li>
-</ol>
-<ol start="3">
-<li><p>StringBuffer</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">m3</span><span class="params">(String[] strs)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">long</span> startTime = System.currentTimeMillis();</span><br><span class="line">    StringBuffer sb = <span class="keyword">new</span> StringBuffer();</span><br><span class="line">    String result;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;<span class="number">20000</span>; i++)</span><br><span class="line">    <span class="keyword">for</span> (String s: strs) &#123;</span><br><span class="line">        sb.append(s);</span><br><span class="line">    &#125;</span><br><span class="line">    result = sb.toString();</span><br><span class="line">    System.out.println(<span class="string">"M3 cost "</span> + (System.currentTimeMillis() - startTime) + <span class="string">" ms."</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// Output: M3 cost 4 ms.</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>StringBuilder</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">m4</span><span class="params">(String[] strs)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">long</span> startTime = System.currentTimeMillis();</span><br><span class="line">    StringBuilder sb = <span class="keyword">new</span> StringBuilder();</span><br><span class="line">    String result;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;<span class="number">20000</span>; i++)</span><br><span class="line">    <span class="keyword">for</span> (String s: strs) &#123;</span><br><span class="line">        sb.append(s);</span><br><span class="line">    &#125;</span><br><span class="line">    result = sb.toString();</span><br><span class="line">    System.out.println(<span class="string">"M4 cost "</span> + (System.currentTimeMillis() - startTime) + <span class="string">" ms."</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// Output: M4 cost 3 ms.</span></span><br></pre></td></tr></table></figure>
-
-</li>
-</ol>
-<p>StringBuffer和StringBuilder都是比较高效的，它们有什么区别呢？<br>StringBuffer是Synchronized，线程安全的；<br>StringBuilder是非线程安全的，适用于单线程的情况。</p>
-<p>总结：操作少量数据是可以用String，单线程大量数据时用StringBuilder，多线程大量数据时用StringBuffer.</p>
-<h2 id="优化"><a href="#优化" class="headerlink" title="优化"></a>优化</h2><p>优化题目代码，就把++方法改成sb方法做拼接：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 3 ms	36 MB </span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">intToRoman</span><span class="params">(<span class="keyword">int</span> num)</span> </span>&#123;</span><br><span class="line">        StringBuilder roman=<span class="keyword">new</span> StringBuilder();</span><br><span class="line">        <span class="keyword">while</span>(num / <span class="number">1000</span> != <span class="number">0</span>) &#123;</span><br><span class="line">            num -= <span class="number">1000</span>;</span><br><span class="line">            roman.append(<span class="string">"M"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">while</span>(num / <span class="number">900</span> != <span class="number">0</span>) &#123;</span><br><span class="line">            num -= <span class="number">900</span>;</span><br><span class="line">            roman.append(<span class="string">"CM"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">while</span>(num / <span class="number">500</span> != <span class="number">0</span>) &#123;</span><br><span class="line">            num -= <span class="number">500</span>;</span><br><span class="line">            roman.append(<span class="string">"D"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">while</span>(num / <span class="number">400</span> != <span class="number">0</span>) &#123;</span><br><span class="line">            num -= <span class="number">400</span>;</span><br><span class="line">            roman.append(<span class="string">"CD"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">while</span>(num / <span class="number">100</span> != <span class="number">0</span>) &#123;</span><br><span class="line">            num -= <span class="number">100</span>;</span><br><span class="line">            roman.append(<span class="string">"C"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">while</span>(num / <span class="number">90</span> != <span class="number">0</span>) &#123;</span><br><span class="line">            num -= <span class="number">90</span>;</span><br><span class="line">            roman.append(<span class="string">"XC"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">          <span class="keyword">while</span>(num / <span class="number">50</span> != <span class="number">0</span>) &#123;</span><br><span class="line">            num -= <span class="number">50</span>;</span><br><span class="line">            roman.append(<span class="string">"L"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">while</span>(num / <span class="number">40</span> != <span class="number">0</span>) &#123;</span><br><span class="line">            num -= <span class="number">40</span>;</span><br><span class="line">            roman.append(<span class="string">"XL"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">while</span>(num / <span class="number">10</span> != <span class="number">0</span>) &#123;</span><br><span class="line">            num -= <span class="number">10</span>;</span><br><span class="line">            roman.append(<span class="string">"X"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">            <span class="keyword">while</span>(num / <span class="number">9</span> != <span class="number">0</span>) &#123;</span><br><span class="line">            num -= <span class="number">9</span>;</span><br><span class="line">            roman.append(<span class="string">"IX"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">while</span>(num / <span class="number">5</span> != <span class="number">0</span>) &#123;</span><br><span class="line">            num -= <span class="number">5</span>;</span><br><span class="line">            roman.append(<span class="string">"V"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">while</span>(num / <span class="number">4</span> != <span class="number">0</span>) &#123;</span><br><span class="line">            num -= <span class="number">4</span>;</span><br><span class="line">            roman.append(<span class="string">"IV"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;num;i++)&#123;</span><br><span class="line">            roman.append(<span class="string">"I"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> roman.toString();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这个代码看上去还是有点啰嗦，可以再把重复的代码修改一下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">intToRoman</span><span class="params">(<span class="keyword">int</span> num)</span> </span>&#123;</span><br><span class="line">        StringBuilder roman=<span class="keyword">new</span> StringBuilder();</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">int</span>[] ints = <span class="keyword">new</span> <span class="keyword">int</span>[]&#123;<span class="number">1000</span>, <span class="number">900</span>, <span class="number">500</span>, <span class="number">400</span>, <span class="number">100</span>, <span class="number">90</span>, </span><br><span class="line">                               <span class="number">50</span>, <span class="number">40</span>, <span class="number">10</span>, <span class="number">9</span>, <span class="number">5</span>, <span class="number">4</span>, <span class="number">1</span>&#125;;</span><br><span class="line">        String[] roms = <span class="keyword">new</span> String[]&#123;<span class="string">"M"</span>, <span class="string">"CM"</span>, <span class="string">"D"</span>, <span class="string">"CD"</span>, <span class="string">"C"</span>, <span class="string">"XC"</span>,</span><br><span class="line">                                    <span class="string">"L"</span>, <span class="string">"XL"</span>, <span class="string">"X"</span>, <span class="string">"IX"</span>, <span class="string">"V"</span>, <span class="string">"IV"</span>, <span class="string">"I"</span>&#125;;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;<span class="number">13</span>; i++) &#123;</span><br><span class="line">            <span class="keyword">while</span> (num / ints[i] != <span class="number">0</span>) &#123;</span><br><span class="line">                num -= ints[i];</span><br><span class="line">                roman.append(roms[i]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> roman.toString();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
       
     </div>
 
@@ -1173,7 +1152,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-count">12</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1186,7 +1165,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-count">9</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
